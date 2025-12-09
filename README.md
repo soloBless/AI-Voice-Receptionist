@@ -76,6 +76,34 @@ VAPI speaks the response back to guest
         ↓  
 For general inquiries → RAG Agent → Vector Search → Answer returned
 
+        ┌──────────────────┐
+        │      Caller       │
+        └─────────┬────────┘
+                  │ Voice
+                  ▼
+        ┌──────────────────┐
+        │   VAPI Voice AI   │
+        └─────────┬────────┘
+        JSON Out  │
+                  ▼
+        ┌──────────────────┐
+        │       n8n        │
+        │  Webhook Router  │
+        └─────────┬────────┘
+       Calls Tools │
+                  ▼
+        ┌──────────────────┐
+        │     RAG Engine    │
+        │ Document Lookup   │
+        └───────┬──────────┘
+                │
+                ▼
+        ┌──────────────────┐
+        │ External Services │
+        │  DB / API / CRM  │
+        └──────────────────┘
+
+
 ### Workflow Breakdown
 ---
 1️⃣ Reservation Availability Check
@@ -129,6 +157,18 @@ n8n indexes Google Drive documents automatically
 Uses Supabase Vector Store
 
 Google Gemini generates short, voice-appropriate responses
+
+ai-voice-receptionist/
+├── workflows/
+│   └── Vapi + RAG.json      # n8n workflow (reference from user)
+├── docs/
+│   └── KB/                  # RAG documents
+├── api/
+│   ├── createReservation.js
+│   ├── checkAvailability.js
+│   └── catalogue.js
+└── README.md
+
 
 ### Technology Stack
 
