@@ -6,7 +6,8 @@ The **Voice Reservation Assistant** is a fully automated restaurant reservation 
 It enables guests to make reservations, check availability, modify or cancel bookings, and ask general questions — all through a natural conversational voice interface.  
 For non-reservation questions, the system uses a **RAG (Retrieval-Augmented Generation)** pipeline connected to restaurant documentation stored in Google Drive.
 
-![Voice Reservation](https://github.com/user-attachments/assets/demo-placeholder.png)
+![Voice Reservation](<img width="1561" height="726" alt="Vapi + RAG" src="https://github.com/user-attachments/assets/198fad8d-9cb7-4e06-918b-cc6be08098d2" />
+)
 
 ---
 
