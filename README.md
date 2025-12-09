@@ -158,6 +158,8 @@ Uses Supabase Vector Store
 
 Google Gemini generates short, voice-appropriate responses
 
+---
+
 ai-voice-receptionist/
 ├── workflows/
 │   └── Vapi + RAG.json      # n8n workflow (reference from user)
@@ -169,7 +171,7 @@ ai-voice-receptionist/
 │   └── catalogue.js
 └── README.md
 
-
+---
 ### Technology Stack
 
 | Component                   | Purpose                                  |
