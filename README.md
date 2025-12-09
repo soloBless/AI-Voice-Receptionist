@@ -7,6 +7,8 @@ It enables guests to make reservations, check availability, modify or cancel boo
 For non-reservation questions, the system uses a **RAG (Retrieval-Augmented Generation)** pipeline connected to restaurant documentation stored in Google Drive.
 
 <img width="1561" height="726" alt="Vapi + RAG" src="https://github.com/user-attachments/assets/198fad8d-9cb7-4e06-918b-cc6be08098d2" />
+<img width="524" height="790" alt="vapi 3" src="https://github.com/user-attachments/assets/c93950bd-cf13-402e-9ea6-e4fa99c01e40" />
+
 
 
 ---
