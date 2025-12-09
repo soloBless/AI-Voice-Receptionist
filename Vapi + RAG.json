@@ -1,0 +1,1423 @@
+{
+  "name": "Vapi + RAG",
+  "nodes": [
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "7fc5551d-cf6c-47a7-974a-fffdb351f7a3",
+              "name": "fileId",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2272,
+        -5296
+      ],
+      "id": "26afb451-947f-47b3-b00a-a9b0791a731c",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "1U02qPcVWF6Q54yIimFQJfJg3mEuzs7xc",
+          "mode": "list",
+          "cachedResultName": "AI Voice Receptionist + RAG",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1U02qPcVWF6Q54yIimFQJfJg3mEuzs7xc"
+        },
+        "event": "fileCreated",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        2032,
+        -5392
+      ],
+      "id": "41d08cd4-4b68-4e42-bdcb-5f4924da9a80",
+      "name": "Upload of Document",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "zpJI957FPePQaGxY",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFile",
+        "fileToWatch": {
+          "__rl": true,
+          "value": "1tfmbowbHTdCEBPczF30VwrdBRVbOiRLH",
+          "mode": "list",
+          "cachedResultName": "restaurant_catalog_comprehensive.docx",
+          "cachedResultUrl": "https://docs.google.com/document/d/1tfmbowbHTdCEBPczF30VwrdBRVbOiRLH/edit?usp=drivesdk&ouid=115396590043571656338&rtpof=true&sd=true"
+        }
+      },
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        2032,
+        -5184
+      ],
+      "id": "c2cc9def-fc5f-447b-a62c-920abab30e75",
+      "name": "Document is Modified",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "zpJI957FPePQaGxY",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('Edit Fields').item.json.fileId }}",
+          "mode": "id"
+        },
+        "options": {
+          "googleFileConversion": {
+            "conversion": {
+              "docsToFormat": "application/pdf",
+              "drawingsToFormat": "application/pdf",
+              "slidesToFormat": "application/pdf",
+              "sheetsToFormat": "application/pdf"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        2864,
+        -5296
+      ],
+      "id": "7bad8d9d-8a2d-40de-aa1c-ae4058ca3adc",
+      "name": "Download file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "zpJI957FPePQaGxY",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "options": {
+          "queryName": "match_documents"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        3088,
+        -5296
+      ],
+      "id": "de3e12b6-ea50-45eb-b734-3871cb05b58a",
+      "name": "Supabase Vector Store",
+      "credentials": {
+        "supabaseApi": {
+          "id": "8xOOtNdCJF83gVOP",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelName": "embed-english-v3.0"
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsCohere",
+      "typeVersion": 1,
+      "position": [
+        3056,
+        -5104
+      ],
+      "id": "2a5a029a-43ab-4493-b10e-bdc21123bfb1",
+      "name": "Embeddings Cohere",
+      "credentials": {
+        "cohereApi": {
+          "id": "52UbYA0pD0khFhmq",
+          "name": "CohereApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "dataType": "binary",
+        "options": {
+          "metadata": {
+            "metadataValues": [
+              {
+                "name": "fileId",
+                "value": "={{ $('Edit Fields').item.json.fileId }}"
+              }
+            ]
+          }
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        3296,
+        -5056
+      ],
+      "id": "2348b71b-de9f-4f58-bec9-7e1a3b7f160b",
+      "name": "Default Data Loader"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        2640,
+        -4592
+      ],
+      "id": "fc2e2c4d-3d16-4956-b64d-13bb85b57d08",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "qHGVK0nnxu45Afjd",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $execution.id }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        2784,
+        -4560
+      ],
+      "id": "095df360-0e1a-42aa-b82e-fc7ecb852311",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "modelName": "embed-english-v3.0"
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsCohere",
+      "typeVersion": 1,
+      "position": [
+        2944,
+        -4400
+      ],
+      "id": "a9ef9e2a-3f0f-4c57-9c05-ab700f5faf8b",
+      "name": "Embeddings Cohere1",
+      "credentials": {
+        "cohereApi": {
+          "id": "52UbYA0pD0khFhmq",
+          "name": "CohereApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Use tool as the information is used to answer the guest question regarding the resturant",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "topK": 15,
+        "options": {
+          "queryName": "match_documents"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        2944,
+        -4576
+      ],
+      "id": "a960c837-af74-42d6-b15f-d7776ea67360",
+      "name": "Supabase Vector Store2",
+      "credentials": {
+        "supabaseApi": {
+          "id": "8xOOtNdCJF83gVOP",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "tableId": "documents",
+        "filterType": "string",
+        "filterString": "=metadata ->>fileId=like.*{{ $json.fileId }}*"
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        2480,
+        -5296
+      ],
+      "id": "b572bb06-4e95-4ad6-ae89-950bd1be5398",
+      "name": "Delete a row",
+      "alwaysOutputData": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "8xOOtNdCJF83gVOP",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        2688,
+        -5296
+      ],
+      "id": "810d161e-2b7f-45a6-8ff1-8de73755663b",
+      "name": "Limit"
+    },
+    {
+      "parameters": {
+        "content": "Check Availability for Reservation",
+        "height": 192,
+        "width": 912
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        816,
+        -5488
+      ],
+      "typeVersion": 1,
+      "id": "dad2c302-1490-46a6-9621-a6850ed0666c",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "Create Reservation",
+        "height": 208,
+        "width": 912,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        816,
+        -5264
+      ],
+      "typeVersion": 1,
+      "id": "59b4a9ee-ac2d-4b56-8e02-aca5f41585d7",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1536,
+        -4800
+      ],
+      "id": "71e23a5e-5294-40b1-9910-a52dcbc477e0",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "content": "Retrieve Reservation Information",
+        "height": 368,
+        "width": 912
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        816,
+        -5024
+      ],
+      "typeVersion": 1,
+      "id": "f62f6f79-befa-452b-a912-b0e1bbc77a0f",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "RAG Mechanism for General Inquiries about the resturant and its services",
+        "height": 1232,
+        "width": 1552
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1888,
+        -5472
+      ],
+      "typeVersion": 1,
+      "id": "9e168f8d-3aed-4f52-b5d9-a455cde940d1",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "Cancellation of Reservation Made",
+        "height": 400,
+        "width": 1152
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        688,
+        -4608
+      ],
+      "typeVersion": 1,
+      "id": "a0626120-dc1b-4301-96f1-041e64c20d5a",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "4e02d104-aae5-4d24-a166-837d08dec369",
+              "leftValue": "={{ $('Request for Rescheduling').item.json.body.message.toolCalls[0].function.arguments.name }}",
+              "rightValue": "={{ $json.guest_name }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "70613964-dcde-4a25-b44a-7ca73a0f9e5b",
+              "leftValue": "={{ $('Request for Rescheduling').item.json.body.message.toolCalls[0].function.arguments.old_date }}",
+              "rightValue": "={{ $json.date }}",
+              "operator": {
+                "type": "dateTime",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "7eebaacc-4768-4239-b791-ed51c90b3847",
+              "leftValue": "={{ $('Request for Rescheduling').item.json.body.message.toolCalls[0].function.arguments.old_time }}",
+              "rightValue": "={{ $json.time }}",
+              "operator": {
+                "type": "dateTime",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1136,
+        -4080
+      ],
+      "id": "e89fe129-5d3b-426a-853f-0f93d1bc6622",
+      "name": "If2"
+    },
+    {
+      "parameters": {
+        "content": "Rescheduling",
+        "height": 352,
+        "width": 1152
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        688,
+        -4160
+      ],
+      "typeVersion": 1,
+      "id": "398ac63e-ebbb-4412-ac78-d56e261d4d11",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "url": "https://kagipayanttuxaxsdazd.supabase.co/functions/v1/reservations-api/availability",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "date",
+              "value": "={{ $json.body.message.toolCallList[0].function.arguments.date }}"
+            },
+            {
+              "name": "time",
+              "value": "={{ $json.body.message.toolCallList[0].function.arguments.time }}"
+            },
+            {
+              "name": "party_size",
+              "value": "={{ $json.body.message.toolCallList[0].function.arguments.party_size }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "date",
+              "value": "={{ $json.body.message.toolCallList[0].function.arguments.date }}"
+            },
+            {
+              "name": "time",
+              "value": "={{ $json.body.message.toolCallList[0].function.arguments.time }}"
+            },
+            {
+              "name": "party_size",
+              "value": "={{ $json.body.message.toolCallList[0].function.arguments.party_size }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1184,
+        -5456
+      ],
+      "id": "8772f7ed-e32a-4f19-a28c-128828d7e97c",
+      "name": "Checkavaliability tool"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://kagipayanttuxaxsdazd.supabase.co/functions/v1/reservations-api",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "guest_name",
+              "value": "={{ $json.body.message.toolCalls[0].function.arguments.guest_name }}"
+            },
+            {
+              "name": "phone_number",
+              "value": "={{ $json.body.message.toolCalls[0].function.arguments.phone_number }}"
+            },
+            {
+              "name": "party_size",
+              "value": "={{ $json.body.message.toolCalls[0].function.arguments.party_size }}"
+            },
+            {
+              "name": "date",
+              "value": "={{ $json.body.message.toolCalls[0].function.arguments.date }}"
+            },
+            {
+              "name": "time",
+              "value": "={{ $json.body.message.toolCalls[0].function.arguments.time }}"
+            },
+            {
+              "name": "occasion",
+              "value": "={{ $json.body.message.toolCalls[0].function.arguments.occasion }}"
+            },
+            {
+              "name": "notes",
+              "value": "={{ $json.body.message.toolCalls[0].function.arguments.notes }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1120,
+        -5216
+      ],
+      "id": "f14c5f8c-af7e-4a26-aa87-8303437e52a8",
+      "name": "createReservation tool"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n    \"results\": [\n        {\n            \"toolCallId\": \"{{ $('create a Reservation').item.json.body.message.toolCalls[0].id }}\",\n            \"result\": \"{{ $json.message }}, your reservation is for table {{ $json.table_id }}\"\n        }\n    ]\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        1376,
+        -5216
+      ],
+      "id": "52006ba3-4a64-4509-bfd5-2f8e73561564",
+      "name": "Reservation created"
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "dataTableId": {
+          "__rl": true,
+          "value": "Fw4j7c3FduXTVmy8",
+          "mode": "list",
+          "cachedResultName": "Reservation details",
+          "cachedResultUrl": "/projects/XKzcTIKRSY7evsLN/datatables/Fw4j7c3FduXTVmy8"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyValue": "={{ $('createReservation tool').item.json.table_id }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "name": "={{ $('create a Reservation').item.json.body.message.toolCalls[0].function.arguments.guest_name }}",
+            "reservation_time": "={{ $('create a Reservation').item.json.body.message.toolCalls[0].function.arguments.time }}",
+            "reservation_date": "={{ $('create a Reservation').item.json.body.message.toolCallList[0].function.arguments.date }}",
+            "reservation_id": "={{ $json.reservation_id }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "reservation_time",
+              "displayName": "reservation_time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "reservation_date",
+              "displayName": "reservation_date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "reservation_id",
+              "displayName": "reservation_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        1552,
+        -5216
+      ],
+      "id": "6b1a3024-f881-4133-9060-8b7d8b352d29",
+      "name": "Reservation Made Database"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "b20f0493-dac9-46ee-b462-7e5103597edc",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "*"
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        912,
+        -5456
+      ],
+      "id": "e79c805a-230b-4965-b465-8c09e5fbaf9b",
+      "name": "checkAvailability",
+      "webhookId": "b20f0493-dac9-46ee-b462-7e5103597edc",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "eca58f82-c9c5-44bd-b563-6ac594e7ac43",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        912,
+        -5216
+      ],
+      "id": "256b05b5-ca3d-4d12-af66-5f344207966b",
+      "name": "create a Reservation",
+      "webhookId": "eca58f82-c9c5-44bd-b563-6ac594e7ac43"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "3699aaf0-61ae-46bb-849d-fa73c2026316",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        864,
+        -4928
+      ],
+      "id": "66b6afd4-1541-4af9-b7a4-3d70238aca69",
+      "name": "retrieve a Reservation Detail",
+      "webhookId": "3699aaf0-61ae-46bb-849d-fa73c2026316"
+    },
+    {
+      "parameters": {
+        "url": "https://kagipayanttuxaxsdazd.supabase.co/functions/v1/reservations-api",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1072,
+        -4928
+      ],
+      "id": "f702c6c8-4b92-48c5-8c28-416534aac937",
+      "name": "Get all Reservations Made"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "44411751-1729-4b35-a2ad-c1e8671346f1",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        752,
+        -4464
+      ],
+      "id": "77d89d7f-23f2-45ef-b292-cd920b9eae3d",
+      "name": "Request for cancellation",
+      "webhookId": "44411751-1729-4b35-a2ad-c1e8671346f1"
+    },
+    {
+      "parameters": {
+        "url": "https://kagipayanttuxaxsdazd.supabase.co/functions/v1/reservations-api",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        960,
+        -4464
+      ],
+      "id": "d109015c-f625-40af-b01c-fcf14fb28bab",
+      "name": "Get all Reservations"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "04fbc84c-075e-4dc9-8fae-28927550c6a2",
+              "leftValue": "={{ $('Request for cancellation').item.json.body.message.toolCallList[0].function.arguments.name }}",
+              "rightValue": "={{ $json.guest_name }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "f2f13b31-a701-4eb9-ad34-b87f0cd61e58",
+              "leftValue": "={{ $('Request for cancellation').item.json.body.message.toolCallList[0].function.arguments.date }}",
+              "rightValue": "={{ $json.date }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1152,
+        -4464
+      ],
+      "id": "dacf9a12-8d0e-4b05-bf36-adc775710458",
+      "name": "Does reservation exist"
+    },
+    {
+      "parameters": {
+        "method": "DELETE",
+        "url": "=https://kagipayanttuxaxsdazd.supabase.co/functions/v1/reservations-api/{{ $json.id }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1360,
+        -4544
+      ],
+      "id": "c4f4ebf5-d193-42ae-9e42-3a2a1a03ac1c",
+      "name": "deleteReservation tool"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "04fbc84c-075e-4dc9-8fae-28927550c6a2",
+              "leftValue": "={{ $('retrieve a Reservation Detail').item.json.body.message.toolCalls[0].function.arguments.name }}",
+              "rightValue": "={{ $json.guest_name }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "f2f13b31-a701-4eb9-ad34-b87f0cd61e58",
+              "leftValue": "={{ $('retrieve a Reservation Detail').item.json.body.message.toolCalls[0].function.arguments.date }}",
+              "rightValue": "={{ $json.date }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1248,
+        -4928
+      ],
+      "id": "6b7ae49f-ec98-4cb0-b1ee-8bfe0462ee17",
+      "name": "retrieveReservation tool"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "e19f9975-4d38-45f8-97c1-9cbcbf106cc9",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        720,
+        -4080
+      ],
+      "id": "dd42586c-f3b6-4311-b9d9-c8ac8c7b170d",
+      "name": "Request for Rescheduling",
+      "webhookId": "e19f9975-4d38-45f8-97c1-9cbcbf106cc9"
+    },
+    {
+      "parameters": {
+        "url": "https://kagipayanttuxaxsdazd.supabase.co/functions/v1/reservations-api",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        912,
+        -4080
+      ],
+      "id": "921460fb-80a1-44d5-a38a-d70082a1a39f",
+      "name": "Get all reservations"
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "=https://kagipayanttuxaxsdazd.supabase.co/functions/v1/reservations-api/{{ $json.id }}",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "date",
+              "value": "={{ $('Request for Rescheduling').item.json.body.message.toolCalls[0].function.arguments.new_date }}"
+            },
+            {
+              "name": "time",
+              "value": "={{ $('Request for Rescheduling').item.json.body.message.toolCalls[0].function.arguments.new_time }}"
+            },
+            {
+              "name": "party_size",
+              "value": "={{ $('Request for Rescheduling').item.json.body.message.toolCalls[0].function.arguments.new_party_size }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1392,
+        -4144
+      ],
+      "id": "ce3ba199-b90a-4a9d-9cb7-ef4440c60d34",
+      "name": "modifyReservation tool"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n    \"results\": [\n        {\n            \"toolCallId\": \"{{ $('Request for cancellation').item.json.body.message.toolCalls[0].id }}\",\n            \"result\": \"{{ $json.message }}\"\n        }\n    ]\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        1568,
+        -4544
+      ],
+      "id": "c2684e80-2551-456c-9131-76d72be497c6",
+      "name": "Cancellation confirmed"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n    \"results\": [\n        {\n            \"toolCallId\": \"{{ $('Request for Rescheduling').item.json.body.message.toolCalls[0].id }}\",\n            \"result\": \"{{ $json.message }}, you'll be seated at table {{ $json.table_id }}\"\n        }\n    ]\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        1600,
+        -4144
+      ],
+      "id": "59f8290c-8f7d-4f97-9d3f-bba908acb79f",
+      "name": "Rescheduling confirmed"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n    \"results\": [\n        {\n            \"toolCallId\": \"{{ $('checkAvailability').item.json.body.message.toolCallList[0].id }}\",\n            \"result\": \"{{ $json.message }}\"\n        }\n    ]\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        1424,
+        -5456
+      ],
+      "id": "9a099137-bad4-40c4-848b-9eda1d7b230d",
+      "name": "Avaliability Confirmed"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n    \"results\": [\n        {\n            \"toolCallId\": \"{{ $('retrieve a Reservation Detail').item.json.body.message.toolCalls[0].id }}\",\n            \"result\": \"Confirmed, party of {{ $json.party_size }} at {{ $json.time }}\"\n        }\n    ]\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        1536,
+        -4992
+      ],
+      "id": "a8611646-495a-4c0e-add7-652fb91a6288",
+      "name": "Reservation details provided"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1360,
+        -4368
+      ],
+      "id": "75f5a279-2878-409a-b4f0-63c7659d4aea",
+      "name": "End"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1376,
+        -3968
+      ],
+      "id": "c99df3b7-ad63-4467-86a2-c69c51809e8a",
+      "name": "Stop"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "c8108e47-ff6a-4737-9bd3-ed524e2f5f9d",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        2464,
+        -4816
+      ],
+      "id": "4764dc8d-ceb2-41af-a50e-91b28798d571",
+      "name": "Recieve Inquiry",
+      "webhookId": "c8108e47-ff6a-4737-9bd3-ed524e2f5f9d"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=\nYou are a structured-output agent for a restaurant reservation system. \nYour ONLY responsibility is to return an answer an inquiry\n\ninquiry: {{ $json.body.message.toolCalls[0].function.arguments.Inquiry }}\n\nRESPONSE FORMAT RULES:\n- The output must be a single-line string suitable for voice output.\n- DO NOT include explanations, bullets, markdown, reasoning, or extra fields.\n- DO NOT include any line breaks inside JSON strings.\n- DO NOT return text outside the JSON.\n- Escape all quotes inside strings.\n\nWHEN ANSWERING:\n- If asked about restaurant reservations: answer directly.\n- If asked about cancellations or policies: summarize clearly in one sentence.\n\n\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        2672,
+        -4816
+      ],
+      "id": "38b7a03d-dc06-49b7-9f28-9e094e338162",
+      "name": "RAG Agent"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n    \"results\": [\n        {\n            \"toolCallId\": \"{{ $('Recieve Inquiry').item.json.body.message.toolCalls[0].id }}\",\n            \"result\": \"{{ $json.output }}\"\n        }\n    ]\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        3024,
+        -4816
+      ],
+      "id": "cdf62523-c395-4fbc-8cf4-9b61d8a3b774",
+      "name": "Inquiry response provided"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Document is Modified": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload of Document": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Delete a row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Cohere": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "RAG Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "RAG Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Cohere1": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store2",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store2": {
+      "ai_tool": [
+        [
+          {
+            "node": "RAG Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete a row": {
+      "main": [
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [
+          {
+            "node": "modifyReservation tool",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Stop",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Checkavaliability tool": {
+      "main": [
+        [
+          {
+            "node": "Avaliability Confirmed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "createReservation tool": {
+      "main": [
+        [
+          {
+            "node": "Reservation created",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reservation created": {
+      "main": [
+        [
+          {
+            "node": "Reservation Made Database",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "checkAvailability": {
+      "main": [
+        [
+          {
+            "node": "Checkavaliability tool",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create a Reservation": {
+      "main": [
+        [
+          {
+            "node": "createReservation tool",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "retrieve a Reservation Detail": {
+      "main": [
+        [
+          {
+            "node": "Get all Reservations Made",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get all Reservations Made": {
+      "main": [
+        [
+          {
+            "node": "retrieveReservation tool",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Request for cancellation": {
+      "main": [
+        [
+          {
+            "node": "Get all Reservations",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get all Reservations": {
+      "main": [
+        [
+          {
+            "node": "Does reservation exist",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Does reservation exist": {
+      "main": [
+        [
+          {
+            "node": "deleteReservation tool",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "End",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "deleteReservation tool": {
+      "main": [
+        [
+          {
+            "node": "Cancellation confirmed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "retrieveReservation tool": {
+      "main": [
+        [
+          {
+            "node": "Reservation details provided",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Request for Rescheduling": {
+      "main": [
+        [
+          {
+            "node": "Get all reservations",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get all reservations": {
+      "main": [
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "modifyReservation tool": {
+      "main": [
+        [
+          {
+            "node": "Rescheduling confirmed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recieve Inquiry": {
+      "main": [
+        [
+          {
+            "node": "RAG Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RAG Agent": {
+      "main": [
+        [
+          {
+            "node": "Inquiry response provided",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "versionId": "64015c4d-156b-48ab-bd1e-d9d31351958d",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "37582d8b9670e531e2e765bd5869d50e6779fe3d520bf9702ab17103340f2db8"
+  },
+  "id": "P2w3k65l5UMunZS0",
+  "tags": []
+}
